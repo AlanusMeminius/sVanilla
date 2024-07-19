@@ -331,13 +331,15 @@ jobs:
         - name: 'Create dmg'
           run: |
             macdeployqt ${{ matrix.install_path }}/sVanilla.app -dmg
-            mv *.dmg ${{ matrix.asset_path }}/${{ env.product_name }}_${{ env.ref_id }}-x86_64.dmg ||:
+            mv ${{ matrix.install_path }}/*.dmg ${{ matrix.asset_path }}/${{ env.product_name }}_${{ env.ref_id }}-x86_64.dmg ||:
             
         - name: Calculate SHA256 checksums for each file
           run: |
-            cd  "${{ matrix.asset_path }}" || exit
+            cd "${{ matrix.asset_path }}" || exit
             for file in *; do
-                [ -f "$file" ] && sha256sum "$file" > "$file.sha256"
+                if [ -f "$file" ]; then
+                    sha256sum "$file" > "$file.sha256"
+                fi
             done
 
         - name: Update GitHub Release
